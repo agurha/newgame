@@ -19,6 +19,9 @@ namespace NoughtsAndCrossesMultiPlayer.Web
         void Publish(string channelName, string content);
     }
 
+    /// <summary>
+    /// Notify contract
+    /// </summary>
     [ServiceContract]
     public interface INotification
     {
@@ -27,6 +30,9 @@ namespace NoughtsAndCrossesMultiPlayer.Web
         void EndNotify(IAsyncResult result);
     }
 
+    /// <summary>
+    /// This is for getting policy
+    /// </summary>
     [ServiceContract]
     public interface IPolicyRetriever
     {
@@ -34,6 +40,7 @@ namespace NoughtsAndCrossesMultiPlayer.Web
         Stream GetSilverlightPolicy();
         [OperationContract, WebGet(UriTemplate = "/crossdomain.xml")]
         Stream GetFlashPolicy();
+
     }
 
 }
