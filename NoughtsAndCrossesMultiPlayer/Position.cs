@@ -16,6 +16,7 @@ namespace NoughtsAndCrossesMultiPlayer
         public int XPos { get; set; }
         public int YPos { get; set; }
 
+	// Pretty print.
         public override string ToString()
         {
             return string.Format("Xpos: {0}, YPos:{1}", XPos, YPos);
