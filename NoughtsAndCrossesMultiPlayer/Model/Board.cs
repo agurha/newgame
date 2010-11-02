@@ -14,7 +14,7 @@ namespace NoughtsAndCrossesMultiPlayer.Model
     /// <summary>
     /// This class will model the Board, keeping track of status of each square in the grid
     /// using a 3x3 array. A Board viewmodel will then wrap it and convert this to a single 
-    /// ObservableCollection of length 9...
+    /// ObservableCollection of length 9... changeat work
     /// </summary>
     public class Board
     {
