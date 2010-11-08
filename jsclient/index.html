@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>	
+		<meta charset="utf-8">
+		<title>Noughts & Crosses</title>
+	</head>
+	<body>
+		<canvas id="a" width="600" height="600"/>
+		<script> 
+		
+		Array.matrix = function (m, n, initial) 
+		{
+		    var a, i, j, mat = [];
+		    for (i = 0; i < m; i += 1) 
+			{
+		        a = [];
+		        for (j = 0; j < n; j += 1) 
+				{
+		            a[j] = 0;
+		        }
+		        mat[i] = a;
+		    }
+		    return mat;
+		};
+		
+			var g_CanvasElement = document.getElementById("a");
+			var g_DrawingContext = g_CanvasElement.getContext("2d");
+			var margin = 10.5;
+			var x_width = 46;
+			var y_height = 46;
+			var grid_width = x_width * 3;
+			var grid_height = y_height * 3;
+			var player = 0;
+			var rounds = 0;
+
+			g_DrawingContext.fillStyle = "#000";
+			g_DrawingContext.fillRect(margin,margin,grid_width,grid_height);
+			var nought = new Image();
+			nought.src = "nought.png";
+			
+			var cross = new Image();
+			cross.src = "cross.png";
+			
+			
+			
+			var cells = Array.matrix(3,3,0);
+			
+			g_CanvasElement.addEventListener("click", onClick, false);
+			g_DrawingContext.beginPath();
+			g_DrawingContext.lineWidth = 1;
+				
+			for(var x = margin; x <= grid_width + margin; x+= x_width)
+			{
+				g_DrawingContext.moveTo(x, margin);
+				g_DrawingContext.lineTo(x, y_height * 3 + margin);
+			}
+		
+			for(var y = margin; y <= grid_height + margin * 3; y+= y_height)
+			{
+				g_DrawingContext.moveTo(margin,y);
+				g_DrawingContext.lineTo(x_width * 3 + margin,y);
+			}
+			
+			g_DrawingContext.strokeStyle = "#ccc";
+			g_DrawingContext.stroke();
+			
+			g_DrawingContext.font = "24px";
+			g_DrawingContext.fillText("Player "+getPiece(player)+ "'s go..",grid_width+margin, 150.5);
+				
+			function onClick(e)
+			{
+				var point = translateToCanvasPoint(e);
+				if(point.x <= grid_width + margin 
+				&& point.y <= grid_height + margin)
+				{
+					var cell = getCell(point);
+					if(cells[cell.row][cell.col] === 0)
+					{
+						cells[cell.row][cell.col] = getPiece(player);
+						var cpoint = getTopLeftCellCoOrds(point);
+						var piece;
+						if(player === 0)
+						{
+						g_DrawingContext.drawImage(nought,cpoint.x,cpoint.y, x_width,y_height);
+						}
+						else{
+						g_DrawingContext.drawImage(cross,cpoint.x,cpoint.y,
+													  x_width,y_height);
+						}
+						
+						rounds++;
+						player = rounds % 2;
+						g_DrawingContext.clearRect(grid_width+margin,100,200,200);
+						g_DrawingContext.fillText("Player "+getPiece(player)+ "'s go..",grid_width+margin, 150);
+						g_DrawingContext.fillText("Round: "+rounds, grid_width+margin, 170.5);
+						checkWin();
+					}
+				}
+			}
+			
+			function getPiece(player){
+				if(player === 0){
+					return 'O';
+				}
+				return 'X';
+			}
+			
+			function checkWin(){
+				
+				if(
+   cells[0][0] === cells[1][1] && cells [1][1]=== cells[2][2] && cells[0][0]!==0
+|| cells[0][2] === cells[1][1] && cells [1][1]=== cells[2][0] && cells[0][2]!==0
+|| cells[0][0] === cells[0][1] && cells [0][1]=== cells[0][2] && cells[0][0]!==0
+|| cells[0][1] === cells[1][1] && cells [1][1]=== cells[2][1] && cells[0][1]!==0
+|| cells[0][2] === cells[2][1] && cells [2][1]=== cells[2][2] && cells[0][2]!==0
+|| cells[0][0] === cells[0][1] && cells [0][1]=== cells[0][2] && cells[0][0]!==0
+|| cells[1][0] === cells[1][1] && cells [1][1]=== cells[1][2] && cells[1][0]!==0
+|| cells[2][0] === cells[2][1] && cells [2][1]=== cells[2][2] && cells[2][0]!==0){
+					g_DrawingContext.clearRect(grid_width+margin,100,200,200);
+					rounds++;
+					g_DrawingContext.fillText("Player "+getPiece(rounds % 2)+ " wins",grid_width+margin, 150);
+				}
+				else if(rounds == 9){
+					g_DrawingContext.clearRect(grid_width+margin,100,200,200);
+					g_DrawingContext.fillText("Its a draw!",grid_width+margin, 150);
+				}
+			}
+			
+			function getTopLeftCellCoOrds(point)
+			{
+				var x;
+				var y;
+				
+				var cell = getCell(point);
+				
+				x = cell.row * x_width;
+				y = cell.col * y_height;
+				
+				return new CanvasPoint(x+margin,y+margin);
+			}
+			
+			function getCell(point)
+			{
+				var x;
+				var y;
+				
+				x = Math.floor((point.x - margin) / x_width);
+				y = Math.floor((point.y - margin) / y_height);
+				
+				return new Cell(x,y);
+			}
+			
+			function translateToCanvasPoint(e) 
+			{ 
+				var x;
+				var y; 
+				if (e.pageX || e.pageY) 
+				{
+					x = e.pageX; y = e.pageY;
+				} 
+				else 
+				{
+					x = e.clientX + document.body.scrollLeft + 
+						document.documentElement.scrollLeft; 
+					y = e.clientY + document.body.scrollTo + 
+						document.documentElement.scrollTop;
+				}
+				x -= g_CanvasElement.offsetLeft;
+				y -= g_CanvasElement.offsetTop;
+				
+				var cp = new CanvasPoint(x,y);
+				return cp;
+			}
+			
+			var Cell = function(row,col)
+			{
+				this.row = row;
+				this.col = col;
+			};
+				
+			var CanvasPoint = function(x,y){
+				this.x = x;
+				this.y = y;
+			};
+			
+
+		</script>
+	</body>
+</html>
